@@ -41,4 +41,21 @@ public class Board : MonoBehaviour
     {
         
     }
+
+    /// <summary>
+    /// 좌표값을 오목 판의 인덱스 값으로 반환
+    /// </summary>
+    /// <param name="x">x좌표</param>
+    /// <param name="y">y좌표</param>
+    private int IndexToPosition(float x, float y) {
+        // 시작점부터 지정 좌표까지의 거리
+        float xDist = x - (xOffset - (size / 2)); 
+        float yDist = (yOffset - (size / 2)) - y;
+
+        // x, y 각각 몇 번째 칸에 있는지 계산
+        int xCnt = (int)(xDist / size);
+        int yCnt = (int)(yDist / size);
+
+        return (yCnt - 1) * 19 + xCnt - 1;
+    }
 }
