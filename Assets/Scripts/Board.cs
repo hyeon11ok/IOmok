@@ -44,6 +44,8 @@ public class Board : MonoBehaviour
             isChecked[i] = false;
             apples.Add(tmp);
         }
+
+        GameManager.instance.ChangeTurn(); // NONE으로 초기화된 플레이어 변수를 PLAYER1로 변경
     }
 
     // Update is called once per frame
@@ -72,11 +74,9 @@ public class Board : MonoBehaviour
             }
 
             // 마우스 클릭하면 현재 인덱스의 사과를 판 위에 놓는다.
-            if(Input.GetMouseButtonDown(0)) {
-                lastIdx = -1;
-                lastApple = null;
-                isChecked[idx] = true;
-                apples[idx].GetComponent<SpriteRenderer>().color = red;
+            if(Input.GetMouseButtonDown(0) && !isChecked[idx]) {
+                PlaceApple(idx);
+                GameManager.instance.ChangeTurn();
             }
         }
         else { // 마우스가 오목 판 밖으로 벗어나면 초기화
@@ -115,5 +115,27 @@ public class Board : MonoBehaviour
         }
 
         return yCnt * 19 + xCnt;
+    }
+
+    /// <summary>
+    /// 오목 판 위에 사과를 놓는 기능
+    /// </summary>
+    /// <param name="idx">사과를 놓을 교차점의 인덱스</param>
+    private void PlaceApple(int idx) {
+        lastIdx = -1;
+        lastApple = null;
+        isChecked[idx] = true;
+
+        int appleNum = GameManager.instance.RandomNumber(); // 사과에 부여할 랜덤 수 생성
+        int ownerNum = (int)GameManager.instance.CurPlayer; // 현재 플레이어 정보 저장
+        Color curColor = Color.white; // 사과에 입힐 색
+        if(ownerNum == 1) { // 플레이어 1은 빨간색
+            curColor = red;
+        } else if(ownerNum == 2){ // 플레이어 2는 초록색
+            curColor = green;
+        }
+
+        apples[idx].GetComponent<Apple>().Setting(appleNum, (Player)ownerNum, curColor); // 사과 초기화 함수 호출
+
     }
 }
