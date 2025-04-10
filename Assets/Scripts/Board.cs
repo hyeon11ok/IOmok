@@ -14,11 +14,17 @@ public class Board : MonoBehaviour
     // 플레이어가 판을 클릭하면 해당 위치의 사과를 활성화 시키고 유저에 맞는 색으로 바꿈
     public GameObject apple;
     private List<GameObject> apples = new List<GameObject>();
-    private Color red = new Color(221 / 255, 41 / 255, 58 / 255);
-    private Color green = new Color(169 / 255, 200 / 255, 16 / 255);
+    private Color red = new Color(221 / 255f, 41 / 255f, 58 / 255f, 1f);
+    private Color green = new Color(169 / 255f, 200 / 255f, 16 / 255f, 1f);
 
-    int lastIdx = -1;
-    GameObject lastApple;
+    // 사과 미리 보기를 위한 변수
+    // 마지막 사과의 인덱스와 사과 오브젝트를 저장
+    // 현재 마우스 위치의 사과와 차이가 있을 경우 이전 사과 꺼주고 현재 사과 켜줌
+    private int lastIdx = -1;
+    private GameObject lastApple;
+
+    // 사과 리스트의 개수와 동일한 크기로 생성하여 사과가 활성화 됐는지 확인
+    private bool[] isChecked = new bool[(int)Mathf.Pow(lineCnt, 2)];
 
     // Start is called before the first frame update
     void Start()
@@ -35,13 +41,9 @@ public class Board : MonoBehaviour
             float y = yOffset - ((i / lineCnt) * size);
             tmp.transform.position = new Vector2(x, y);
             tmp.SetActive(false);
+            isChecked[i] = false;
             apples.Add(tmp);
         }
-
-        Debug.Log(IndexToPosition(-4.5f, 4f));
-        Debug.Log(IndexToPosition(4.5f, 4.5f));
-        Debug.Log(IndexToPosition(4.4f, 4.5f));
-        // Debug.Log(9.1f % 0.5f);
     }
 
     // Update is called once per frame
@@ -57,12 +59,24 @@ public class Board : MonoBehaviour
 
             // 새로운 인덱스라면 기존에 켜둔 사과를 꺼줘야함
             if (idx != lastIdx) {
-                if(lastApple != null)
+                if (lastApple != null) {
                     lastApple.SetActive(false);
+                }
+                // 사과가 놓이지 않은 칸인 경우
+                if (!isChecked[idx]) {
+                    apples[idx].SetActive(true); // 현재 인덱스의 사과 켜줌
+                                                 // 현재 플레이어에 따라 색 변경
+                    lastIdx = idx; // 마지막 인덱스 저장
+                    lastApple = apples[idx]; // 마지막으로 켜준 사과 저장
+                }
+            }
 
-                lastIdx = idx; // 마지막 인덱스 저장
-                apples[idx].SetActive(true); // 현재 인덱스의 사과 켜줌
-                lastApple = apples[idx]; // 마지막으로 켜준 사과 저장
+            // 마우스 클릭하면 현재 인덱스의 사과를 판 위에 놓는다.
+            if(Input.GetMouseButtonDown(0)) {
+                lastIdx = -1;
+                lastApple = null;
+                isChecked[idx] = true;
+                apples[idx].GetComponent<SpriteRenderer>().color = red;
             }
         }
         else { // 마우스가 오목 판 밖으로 벗어나면 초기화
