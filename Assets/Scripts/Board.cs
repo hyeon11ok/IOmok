@@ -136,6 +136,51 @@ public class Board : MonoBehaviour
         }
 
         apples[idx].GetComponent<Apple>().Setting(appleNum, (Player)ownerNum, curColor); // 사과 초기화 함수 호출
+        CheckWin(apples[idx].GetComponent<Apple>(), idx);
+    }
 
+    /// <summary>
+    /// 승리 판정 기능
+    /// 사과를 판에 놓는 순간 해당 사과를 기준으로 전 방향을 조사하여 결과 판단
+    /// </summary>
+    /// <param name="pivot">마지막으로 놓인 사과</param>
+    /// <param name="idx">사과가 놓인 곳의 인덱스</param>
+    private void CheckWin(Apple pivot, int idx) {
+        // 탐색 방향 배열
+        // 상, 우상, 우, 좌하
+        int[,] dirs = { { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 } };
+
+        // 방향 배열을 순회하며 각 방향과 그 반대 방향을 계산
+        for(int i = 0; i < dirs.GetLength(0); i++) {
+            int dirR = dirs[i, 0] - (dirs[i, 1] * 19); // 정방향 타겟
+            int dirL = (dirs[i, 1] * 19) - dirs[i, 0]; // 역방향 타겟
+
+            int cnt = 1; // 이어진 사과의 개수(기준이 되는 사과도 포함하기에 기본값 1)
+            int sum = CheckApple(dirR, idx, pivot, ref cnt) + CheckApple(dirL, idx, pivot, ref cnt) - pivot.Number; // 이어진 사과의 숫자 합과 개수를 계산
+            Debug.Log($"{i} : Count == {cnt} / Sum == {sum}");
+        }
+    }
+
+    /// <summary>
+    /// 특정 방향으로 이어진 동일한 사과의 갯수와 숫자의 합을 반환
+    /// 재귀함수로서 사용하여 이어진 사과의 끝단까지 진행
+    /// ref를 활용하여 사과 갯수 기록
+    /// </summary>
+    /// <param name="dir">탐색 방향</param>
+    /// <param name="pivotIdx">시작점 인덱스</param>
+    /// <param name="pivot">시작점 사과 객체</param>
+    /// <param name="cnt">개수를 기록할 변수</param>
+    /// <returns></returns>
+    private int CheckApple(int dir, int pivotIdx, Apple pivot, ref int cnt) {
+        int sum = 0;
+        // 지정된 방향의 다음 칸에 사과가 존재하고 그 사과가 최초의 사과와 같은 종류인 경우
+        if (isChecked[pivotIdx + dir] && pivot.Owner == apples[pivotIdx + dir].GetComponent<Apple>().Owner) {
+            // 해당 사과를 매개변수로 넘겨 함수 다시 호출하여 해당 사과의 숫자를 반환
+            sum += CheckApple(dir, pivotIdx + dir, apples[pivotIdx + dir].GetComponent<Apple>(), ref cnt);
+            cnt++; // 사과 개수 증가
+        }
+        sum += pivot.Number; // 자기 자신의 숫자 누적 후 반환
+
+        return sum;
     }
 }
