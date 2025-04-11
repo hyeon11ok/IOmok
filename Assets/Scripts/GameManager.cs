@@ -15,7 +15,10 @@ public class GameManager : MonoBehaviour
     // 게임 시작 전 기본 값은 NONE
     private PlayerType curPlayer = PlayerType.NONE;
 
+    private float limitTime = 15;
+
     public PlayerType CurPlayer { get { return curPlayer; } }
+    public float LimitTime { get {  return limitTime; } }
 
     private void Awake() {
         if(instance == null) {

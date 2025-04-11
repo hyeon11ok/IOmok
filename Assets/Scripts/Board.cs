@@ -12,7 +12,7 @@ public class Board : MonoBehaviour
     // 게임 실행시 모든 좌표에 사과 오브젝트를 미리 한 개 만들어둠
     // 생성된 사과는 리스트로 관리
     // 플레이어가 판을 클릭하면 해당 위치의 사과를 활성화 시키고 유저에 맞는 색으로 바꿈
-    public GameObject apple;
+    [SerializeField] private GameObject apple;
     private List<GameObject> apples = new List<GameObject>();
     private Color red = new Color(221 / 255f, 41 / 255f, 58 / 255f, 1f);
     private Color green = new Color(169 / 255f, 200 / 255f, 16 / 255f, 1f);
