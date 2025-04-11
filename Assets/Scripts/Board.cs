@@ -157,7 +157,9 @@ public class Board : MonoBehaviour
 
             int cnt = 1; // 이어진 사과의 개수(기준이 되는 사과도 포함하기에 기본값 1)
             int sum = CheckApple(dirR, idx, pivot, ref cnt) + CheckApple(dirL, idx, pivot, ref cnt) - pivot.Number; // 이어진 사과의 숫자 합과 개수를 계산
-            Debug.Log($"{i} : Count == {cnt} / Sum == {sum}");
+            if(cnt == 5 && sum == 10) {
+                Debug.Log($"Player{pivot.Owner} Win!!");
+            }
         }
     }
 
