@@ -26,6 +26,8 @@ public class Board : MonoBehaviour
     // 사과 리스트의 개수와 동일한 크기로 생성하여 사과가 활성화 됐는지 확인
     private bool[] isChecked = new bool[(int)Mathf.Pow(lineCnt, 2)];
 
+    public bool[] IsChecked { get { return isChecked; } }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,16 +50,20 @@ public class Board : MonoBehaviour
         GameManager.instance.ChangeTurn(); // NONE으로 초기화된 플레이어 변수를 PLAYER1로 변경
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    /// <summary>
+    /// 사과 미리보기 출력
+    /// </summary>
+    /// <returns>마우스가 오목 판 안에 있는 경우 마우스 위치의 인덱스 반환, 마우스가 오목 판 밖에 있는 경우 -1 반환</returns>
+    public int PrintApplePreview() {
+        int idx = -1;
+
         // 마우스의 위치 좌표
         Vector2 mPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
 
         // 마우스가 오목 판 안에 있는 경우
-        if(-4.75f < mPos.x &&  mPos.x < 4.75f &&
+        if (-4.75f < mPos.x && mPos.x < 4.75f &&
             -4.75f < mPos.y && mPos.y < 4.75f) {
-            int idx = IndexToPosition(mPos.x, mPos.y); // 현재 마우스의 좌표와 인접한 인덱스 저장
+            idx = IndexToPosition(mPos.x, mPos.y); // 현재 마우스의 좌표와 인접한 인덱스 저장
 
             // 새로운 인덱스라면 기존에 켜둔 사과를 꺼줘야함
             if (idx != lastIdx) {
@@ -72,20 +78,16 @@ public class Board : MonoBehaviour
                     lastApple = apples[idx]; // 마지막으로 켜준 사과 저장
                 }
             }
-
-            // 마우스 클릭하면 현재 인덱스의 사과를 판 위에 놓는다.
-            if(Input.GetMouseButtonDown(0) && !isChecked[idx]) {
-                PlaceApple(idx);
-                GameManager.instance.ChangeTurn();
-            }
         }
         else { // 마우스가 오목 판 밖으로 벗어나면 초기화
             lastIdx = -1;
-            if(lastApple != null) {
+            if (lastApple != null) {
                 lastApple.SetActive(false);
                 lastApple = null;
             }
         }
+
+        return idx;
     }
 
     /// <summary>
@@ -121,13 +123,14 @@ public class Board : MonoBehaviour
     /// 오목 판 위에 사과를 놓는 기능
     /// </summary>
     /// <param name="idx">사과를 놓을 교차점의 인덱스</param>
-    private void PlaceApple(int idx) {
+    /// <param name="player">플레이어 정보</param>
+    /// <param name="appleNum">사과에 부여될 숫자</param>
+    public void PlaceApple(int idx, PlayerType player, int appleNum) {
         lastIdx = -1;
         lastApple = null;
         isChecked[idx] = true;
 
-        int appleNum = GameManager.instance.RandomNumber(); // 사과에 부여할 랜덤 수 생성
-        int ownerNum = (int)GameManager.instance.CurPlayer; // 현재 플레이어 정보 저장
+        int ownerNum = (int)player; // 현재 플레이어 정보 저장
         Color curColor = Color.white; // 사과에 입힐 색
         if(ownerNum == 1) { // 플레이어 1은 빨간색
             curColor = red;
@@ -135,8 +138,9 @@ public class Board : MonoBehaviour
             curColor = green;
         }
 
-        apples[idx].GetComponent<Apple>().Setting(appleNum, (Player)ownerNum, curColor); // 사과 초기화 함수 호출
+        apples[idx].GetComponent<Apple>().Setting(appleNum, (PlayerType)ownerNum, curColor); // 사과 초기화 함수 호출
         CheckWin(apples[idx].GetComponent<Apple>(), idx);
+        GameManager.instance.ChangeTurn();
     }
 
     /// <summary>

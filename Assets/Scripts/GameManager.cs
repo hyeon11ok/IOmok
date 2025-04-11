@@ -13,9 +13,9 @@ public class GameManager : MonoBehaviour
 
     // 현재 플레이어 저장
     // 게임 시작 전 기본 값은 NONE
-    private Player curPlayer = Player.NONE;
+    private PlayerType curPlayer = PlayerType.NONE;
 
-    public Player CurPlayer { get { return curPlayer; } }
+    public PlayerType CurPlayer { get { return curPlayer; } }
 
     private void Awake() {
         if(instance == null) {
@@ -26,18 +26,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     /// <summary>
     /// 턴 변경 기능
     /// 플레이어 1 -> 플레이어 2 / 플레이어 2 -> 플레이어 1
@@ -45,16 +33,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ChangeTurn() {
         switch (curPlayer) {
-            case Player.NONE: {
-                    curPlayer = Player.PLAYER1;
+            case PlayerType.NONE: {
+                    curPlayer = PlayerType.PLAYER1;
                     break;
                 }
-            case Player.PLAYER1: {
-                    curPlayer = Player.PLAYER2;
+            case PlayerType.PLAYER1: {
+                    curPlayer = PlayerType.PLAYER2;
                     break;
                 }
-            case Player.PLAYER2: {
-                    curPlayer = Player.PLAYER1;
+            case PlayerType.PLAYER2: {
+                    curPlayer = PlayerType.PLAYER1;
                     break;
                 }
         }
