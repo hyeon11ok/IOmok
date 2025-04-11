@@ -2,6 +2,12 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+*                        # 모든 파일 무시
+!Assets/                 # Assets 폴더는 무시하지 않음
+!Assets/**/*             # Assets 내부 파일도 무시하지 않음
+!ProjectSettings/        # ProjectSettings 폴더도 무시하지 않음
+!ProjectSettings/**/*    # 그 내부 파일들도 무시하지 않음
+
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
